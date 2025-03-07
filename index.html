@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITSSNA</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+</head>
+<body>
+    <div class="background-scene" id="background-scene"></div>
+    
+    <div class="glass-container">
+        <div class="header">
+            <h1>ITSSNA</h1>
+            <div class="user-profile">
+                <span class="user-name">Admin</span>
+                <div class="user-avatar"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="camera-feed">
+                <h2>Camara</h2>
+                <div class="camera-view">
+                    <video id="camera" autoplay playsinline>
+                        <!--<source src="" type="video/mp4">-->
+                    </video>
+                    <div class="camera-controls">
+                        <button class="control-btn">Record</button>
+                        <button class="control-btn">Snapshot</button>
+                        <button class="control-btn">Zoom</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="weather-info">
+                <h2>Environmental Data</h2>
+                <div class="weather-data">
+                    <div class="weather-item">
+                        <span class="weather-label">Temperatura</span>
+                        <span class="weather-value" id="temperature">--°C</span>
+                    </div>
+                    <div class="weather-item">
+                        <span class="weather-label">Humedad</span>
+                        <span class="weather-value" id="humidity">--%</span>
+                    </div>
+                    <div class="weather-item">
+                        <span class="weather-label">Nivel de agua</span>
+                        <span class="weather-value" id="light">--%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="watering-control">
+                <h2>Sistema de Riego</h2>
+                <div class="control-panel">
+                    <button id="wateringBtn" class="watering-btn">
+                        <span class="btn-icon">💧</span>
+                        <span class="btn-text">Activar Riego</span>
+                    </button>
+                    <div class="watering-status">
+                        <span class="status-label">Estatus del Sistema:</span>
+                        <span class="status-value" id="systemStatus">Idle</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+                "orbitcontrols": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js",
+                "sky": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Sky.js",
+                "objloader": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/OBJLoader.js",
+                "mtlloader": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/MTLLoader.js"
+            }
+        }
+    </script>
+    <!--<script src="js/weather.js"></script>-->
+    <script type="module" src="js/background.js"></script>
+    
+</body>
+</html>
