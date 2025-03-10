@@ -8,7 +8,7 @@ import { MTLLoader } from 'mtlloader';
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
+
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 // Append the renderer's canvas to the #background-container div
@@ -16,7 +16,7 @@ document.getElementById('background-scene').appendChild(renderer.domElement);
 
 // 📷 Cámara
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 0.5, 4);
+camera.position.set(0, 0.5, 3.9);
 
 // 🕹️ Controles de Cámara
 //const controls = new OrbitControls(camera, renderer.domElement);
@@ -26,10 +26,8 @@ camera.position.set(0, 0.5, 4);
 const sunlight = new THREE.DirectionalLight(0xffffff, 2);
 sunlight.position.set(5, 10, 5);
 sunlight.castShadow = true;
-sunlight.shadow.mapSize.set(512, 512); // Reducir tamaño de mapa de sombras para mejor rendimiento
-sunlight.shadow.camera.near = 0.5;
-sunlight.shadow.camera.far = 30;
-sunlight.shadow.bias = -0.0001; // Reducir artefactos en sombras
+
+
 scene.add(sunlight);
 
 // 🌎 Luz Ambiental
@@ -98,19 +96,6 @@ anemoneMtlLoader.setMaterialOptions({
 
 anemoneMtlLoader.load(anemoneMtlPath, (materials) => {
     materials.preload();
-
-    const objLoader = new OBJLoader();
-    objLoader.setMaterials(materials);
-    objLoader.setPath('./Models/Anemone_Hybrida_OBJ/maps/');
-    objLoader.load('anemone_hybrida.obj', (object) => {
-        object.traverse((child) => {
-            if (child.isMesh) {
-                child.castShadow = false;  // 🌟 Evita sombras en flores
-                child.receiveShadow = false;
-                child.material.side = THREE.DoubleSide;
-            }
-        });
-
     Object.values(materials.materials).forEach(material => {
         material.transparent = false;
         material.opacity = 1;
@@ -120,8 +105,7 @@ anemoneMtlLoader.load(anemoneMtlPath, (materials) => {
         }
         material.needsUpdate = true;
     });
-    
-    /*const anemoneObjLoader = new OBJLoader();
+    const anemoneObjLoader = new OBJLoader();
     anemoneObjLoader.setMaterials(materials);
     anemoneObjLoader.setPath('./Models/Anemone_Hybrida_OBJ/maps/');
     anemoneObjLoader.load(anemoneObjPath, (object) => {
@@ -141,29 +125,15 @@ anemoneMtlLoader.load(anemoneMtlPath, (materials) => {
                     child.material.needsUpdate = true;
                 }
             }
-        });*/
+        });
 
         // Crear múltiples copias y distribuirlas en el campo
-        /*flowerPositions.forEach(pos => {
+        flowerPositions.forEach(pos => {
             const clone = object.clone();
             clone.position.set(pos.x, pos.y, pos.z);
             //clone.rotation.y = Math.random() * Math.PI * 2; // Rotación aleatoria
             scene.add(clone);
-        });*/
-        // 🎯 Crear InstancedMesh para mejor rendimiento
-        const flowerGeometry = object.children[0].geometry;
-        const flowerMaterial = object.children[0].material;
-        const instancedFlowers = new THREE.InstancedMesh(flowerGeometry, flowerMaterial, flowerPositions.length);
-        instancedFlowers.castShadow = false;
-        instancedFlowers.receiveShadow = false;
-
-        flowerPositions.forEach((pos, i) => {
-            const matrix = new THREE.Matrix4();
-            matrix.setPosition(pos.x, pos.y, pos.z);
-            instancedFlowers.setMatrixAt(i, matrix);
         });
-
-        scene.add(instancedFlowers);
     });
 });
 
@@ -216,13 +186,6 @@ function animate() {
     updateSunPosition();
     //controls.update();
     // Obtener el tamaño actual de la ventana
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    // Ajustar el área de renderizado solo a la parte visible
-    renderer.setScissorTest(true);
-    renderer.setScissor(0, 0, width, height);
-    renderer.setViewport(0, 0, width, height);
     renderer.render(scene, camera);
 }
 
