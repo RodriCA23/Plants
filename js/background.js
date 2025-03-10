@@ -16,7 +16,7 @@ document.getElementById('background-scene').appendChild(renderer.domElement);
 
 // 📷 Cámara
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 1, 4);
+camera.position.set(0, 0.5, 4);
 
 // 🕹️ Controles de Cámara
 //const controls = new OrbitControls(camera, renderer.domElement);
@@ -55,7 +55,7 @@ const flowerPositions = [
     { x: -0.5, y: 0, z: 3 },
     { x: 1.5, y: 0, z: 3 },
     //mover el eje Z para que se vea mas equilibrado
-    { x: 2.5, y: 0, z:  2},
+    /*{ x: 2.5, y: 0, z:  2},
     { x: 2, y: 0, z:  2},
     { x: 3, y: 0, z:  2},
     { x: 2.5, y: 0, z:  1},
@@ -82,7 +82,7 @@ const flowerPositions = [
     { x: 1.5, y: 0, z:  1},
     { x: 1, y: 0, z:  1},
     { x: 0, y: 0, z:  1},
-    { x: -2, y: 0, z:  1},
+    { x: -2, y: 0, z:  1},*/
 ];
 // Cargar modelo Anemone Hybrida
 const anemoneObjPath = 'anemone_hybrida.obj';
