@@ -8,11 +8,11 @@ import { MTLLoader } from 'mtlloader';
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 // Append the renderer's canvas to the #background-container div
-const backgroundContainer = document.getElementById('background-scene');
-backgroundContainer.appendChild(renderer.domElement);
+document.getElementById('background-scene').appendChild(renderer.domElement);
 
 // 📷 Cámara
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -71,7 +71,17 @@ const flowerPositions = [
     { x: -3.5, y: 0, z:  0},
     { x: -3.5, y: 0, z:  1},
     { x: -3, y: 0, z:  1},
-    
+    //centro
+    { x: 0, y: 0, z:  2},
+    { x: 1, y: 0, z:  2},
+    { x: 1.5, y: 0, z:  2},
+    { x: -0.5, y: 0, z:  2},
+    { x: -1, y: 0, z:  2},
+    { x: 2, y: 0, z:  1},
+    { x: 1.5, y: 0, z:  1},
+    { x: 1, y: 0, z:  1},
+    { x: 0, y: 0, z:  1},
+    { x: -2, y: 0, z:  1},
 ];
 // Cargar modelo Anemone Hybrida
 const anemoneObjPath = 'anemone_hybrida.obj';
