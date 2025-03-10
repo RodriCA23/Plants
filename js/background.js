@@ -26,9 +26,10 @@ camera.position.set(0, 1, 4);
 const sunlight = new THREE.DirectionalLight(0xffffff, 2);
 sunlight.position.set(5, 10, 5);
 sunlight.castShadow = true;
-sunlight.shadow.mapSize.set(1024, 1024); // Reducir tamaño de mapa de sombras para mejor rendimiento
+sunlight.shadow.mapSize.set(512, 512); // Reducir tamaño de mapa de sombras para mejor rendimiento
 sunlight.shadow.camera.near = 0.5;
-sunlight.shadow.camera.far = 50;
+sunlight.shadow.camera.far = 30;
+sunlight.shadow.bias = -0.0001; // Reducir artefactos en sombras
 scene.add(sunlight);
 
 // 🌎 Luz Ambiental
@@ -153,7 +154,9 @@ anemoneMtlLoader.load(anemoneMtlPath, (materials) => {
         const flowerGeometry = object.children[0].geometry;
         const flowerMaterial = object.children[0].material;
         const instancedFlowers = new THREE.InstancedMesh(flowerGeometry, flowerMaterial, flowerPositions.length);
-        
+        instancedFlowers.castShadow = false;
+        instancedFlowers.receiveShadow = false;
+
         flowerPositions.forEach((pos, i) => {
             const matrix = new THREE.Matrix4();
             matrix.setPosition(pos.x, pos.y, pos.z);
@@ -207,10 +210,19 @@ function updateSunPosition() {
 }
 
 // 🔄 Loop de animación
+
 function animate() {
     requestAnimationFrame(animate);
     updateSunPosition();
     //controls.update();
+    // Obtener el tamaño actual de la ventana
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    // Ajustar el área de renderizado solo a la parte visible
+    renderer.setScissorTest(true);
+    renderer.setScissor(0, 0, width, height);
+    renderer.setViewport(0, 0, width, height);
     renderer.render(scene, camera);
 }
 
