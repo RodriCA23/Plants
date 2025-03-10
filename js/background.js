@@ -19,13 +19,16 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 camera.position.set(0, 1, 4);
 
 // 🕹️ Controles de Cámara
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
+//const controls = new OrbitControls(camera, renderer.domElement);
+//controls.enableDamping = true;
 
 // ☀️ Luz Solar
 const sunlight = new THREE.DirectionalLight(0xffffff, 2);
 sunlight.position.set(5, 10, 5);
 sunlight.castShadow = true;
+sunlight.shadow.mapSize.set(1024, 1024); // Reducir tamaño de mapa de sombras para mejor rendimiento
+sunlight.shadow.camera.near = 0.5;
+sunlight.shadow.camera.far = 50;
 scene.add(sunlight);
 
 // 🌎 Luz Ambiental
@@ -43,7 +46,33 @@ const ground = new THREE.Mesh(groundGeometry, groundMaterial);
 ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
 scene.add(ground);
-
+const flowerPositions = [
+    { x: 0, y: 0, z: 3 },   // Centro-adelante para equilibrar la vista
+    { x: 1, y: 0, z: 3 },
+    { x: -1, y: 0, z: 3 },
+    { x: 0.5, y: 0, z: 3 },
+    { x: -0.5, y: 0, z: 3 },
+    { x: 1.5, y: 0, z: 3 },
+    //mover el eje Z para que se vea mas equilibrado
+    { x: 2.5, y: 0, z:  2},
+    { x: 2, y: 0, z:  2},
+    { x: 3, y: 0, z:  2},
+    { x: 2.5, y: 0, z:  1},
+    { x: 3, y: 0, z:  1},
+    { x: 3.5, y: 0, z:  1},
+    { x: 4, y: 0, z:  1},
+    { x: 3.5, y: 0, z:  0},
+    //lado izquierdo
+    { x: -2.5, y: 0, z:  2},
+    { x: -2, y: 0, z:  2},
+    { x: -1.5, y: 0, z:  2},
+    { x: -2.5, y: 0, z:  1},
+    { x: -3, y: 0, z:  0},
+    { x: -3.5, y: 0, z:  0},
+    { x: -3.5, y: 0, z:  1},
+    { x: -3, y: 0, z:  1},
+    
+];
 // Cargar modelo Anemone Hybrida
 const anemoneObjPath = 'anemone_hybrida.obj';
 const anemoneMtlPath = 'anemone_hybrida.mtl';
@@ -54,8 +83,23 @@ anemoneMtlLoader.setMaterialOptions({
     path: './Models/Anemone_Hybrida_OBJ/maps/', // Ruta base para las texturas
     crossOrigin: 'anonymous'
 });
+
+
 anemoneMtlLoader.load(anemoneMtlPath, (materials) => {
     materials.preload();
+
+    const objLoader = new OBJLoader();
+    objLoader.setMaterials(materials);
+    objLoader.setPath('./Models/Anemone_Hybrida_OBJ/maps/');
+    objLoader.load('anemone_hybrida.obj', (object) => {
+        object.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = false;  // 🌟 Evita sombras en flores
+                child.receiveShadow = false;
+                child.material.side = THREE.DoubleSide;
+            }
+        });
+
     Object.values(materials.materials).forEach(material => {
         material.transparent = false;
         material.opacity = 1;
@@ -65,8 +109,8 @@ anemoneMtlLoader.load(anemoneMtlPath, (materials) => {
         }
         material.needsUpdate = true;
     });
-
-    const anemoneObjLoader = new OBJLoader();
+    
+    /*const anemoneObjLoader = new OBJLoader();
     anemoneObjLoader.setMaterials(materials);
     anemoneObjLoader.setPath('./Models/Anemone_Hybrida_OBJ/maps/');
     anemoneObjLoader.load(anemoneObjPath, (object) => {
@@ -74,8 +118,8 @@ anemoneMtlLoader.load(anemoneMtlPath, (materials) => {
         object.scale.set(1, 1, 1);
         object.traverse((child) => {
             if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
+                child.castShadow = false;
+                child.receiveShadow = false;
                 if (child.material) {
                     if (child.material.color) {
                         child.material.color.setRGB(1, 1, 1);
@@ -86,26 +130,27 @@ anemoneMtlLoader.load(anemoneMtlPath, (materials) => {
                     child.material.needsUpdate = true;
                 }
             }
-        });
+        });*/
 
         // Crear múltiples copias y distribuirlas en el campo
-        const numFlowers = 100;  // Número de flores en el campo
-        const areaSize = 20;    // Tamaño del área donde se distribuirán las flores
-        for (let i = 0; i < numFlowers; i++) {
+        /*flowerPositions.forEach(pos => {
             const clone = object.clone();
-
-            // Posicionamiento aleatorio dentro de un área de 20x20 unidades
-            const x = Math.random() * areaSize - areaSize / 2; // Aleatorio entre -10 y 10
-            const z = Math.random() * (areaSize / 2) - areaSize / 4; // Aleatorio entre -5 y 5 (más cerca del frente)
-            const y = 0;  // Todas las flores al nivel del suelo
-
-            clone.position.set(x, y, z);
-
-            // Rotación aleatoria para mayor naturalidad
-            clone.rotation.y = Math.random() * Math.PI * 2;
-
+            clone.position.set(pos.x, pos.y, pos.z);
+            //clone.rotation.y = Math.random() * Math.PI * 2; // Rotación aleatoria
             scene.add(clone);
-        }
+        });*/
+        // 🎯 Crear InstancedMesh para mejor rendimiento
+        const flowerGeometry = object.children[0].geometry;
+        const flowerMaterial = object.children[0].material;
+        const instancedFlowers = new THREE.InstancedMesh(flowerGeometry, flowerMaterial, flowerPositions.length);
+        
+        flowerPositions.forEach((pos, i) => {
+            const matrix = new THREE.Matrix4();
+            matrix.setPosition(pos.x, pos.y, pos.z);
+            instancedFlowers.setMatrixAt(i, matrix);
+        });
+
+        scene.add(instancedFlowers);
     });
 });
 
@@ -155,7 +200,7 @@ function updateSunPosition() {
 function animate() {
     requestAnimationFrame(animate);
     updateSunPosition();
-    controls.update();
+    //controls.update();
     renderer.render(scene, camera);
 }
 
